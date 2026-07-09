@@ -5,6 +5,7 @@
 /backend/node_modules
 /backend/.env
 /backend/.npmrc
+/backend/dist
 
 #Frontend
 /frontend/node_modules
