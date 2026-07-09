@@ -26,18 +26,18 @@ export default function PollCreatedPage() {
   }
 
   return (
-    <FormCard title="🎉 הסקר נוצר!">
+    <FormCard title="🎉 Poll created!">
       <p style={{ color: '#94a3b8', marginBottom: '1rem' }}>
-        שתף את הלינק הבא כדי שאנשים יוכלו להצביע:
+        Share this link so people can vote:
       </p>
       <div className="share-box">
         <span>{shareUrl}</span>
         <button type="button" onClick={copyLink}>
-          {copied ? '✓ הועתק' : 'העתק'}
+          {copied ? '✓ Copied' : 'Copy'}
         </button>
       </div>
       <Link to="/create" className="alt-link" style={{ display: 'block', marginTop: '1.5rem' }}>
-        + צור סקר נוסף
+        + Create another poll
       </Link>
     </FormCard>
   )

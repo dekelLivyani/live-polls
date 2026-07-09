@@ -19,16 +19,16 @@ export default function RegisterPage() {
       await register(email, password)
       navigate('/create')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה בהרשמה, נסה שנית')
+      setError(err instanceof Error ? err.message : 'Registration failed, please try again')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <FormCard title="הרשמה">
+    <FormCard title="Register">
       <form onSubmit={handleSubmit}>
-        <label>אימייל</label>
+        <label>Email</label>
         <input
           type="email"
           value={email}
@@ -36,7 +36,7 @@ export default function RegisterPage() {
           required
           autoComplete="email"
         />
-        <label>סיסמה (לפחות 8 תווים)</label>
+        <label>Password (at least 8 characters)</label>
         <input
           type="password"
           value={password}
@@ -47,11 +47,11 @@ export default function RegisterPage() {
         />
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={loading}>
-          {loading ? 'נרשם...' : 'הרשמה'}
+          {loading ? 'Registering...' : 'Register'}
         </button>
       </form>
       <p className="alt-link">
-        כבר רשום? <Link to="/login">התחברות</Link>
+        Already have an account? <Link to="/login">Log in</Link>
       </p>
     </FormCard>
   )
