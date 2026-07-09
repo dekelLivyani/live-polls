@@ -19,16 +19,16 @@ export default function LoginPage() {
       await login(email, password)
       navigate('/create')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'אימייל או סיסמה שגויים')
+      setError(err instanceof Error ? err.message : 'Invalid email or password')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <FormCard title="התחברות">
+    <FormCard title="Log in">
       <form onSubmit={handleSubmit}>
-        <label>אימייל</label>
+        <label>Email</label>
         <input
           type="email"
           value={email}
@@ -36,7 +36,7 @@ export default function LoginPage() {
           required
           autoComplete="email"
         />
-        <label>סיסמה</label>
+        <label>Password</label>
         <input
           type="password"
           value={password}
@@ -46,11 +46,11 @@ export default function LoginPage() {
         />
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={loading}>
-          {loading ? 'מתחבר...' : 'התחברות'}
+          {loading ? 'Logging in...' : 'Log in'}
         </button>
       </form>
       <p className="alt-link">
-        אין לך חשבון? <Link to="/register">הרשמה</Link>
+        No account yet? <Link to="/register">Register</Link>
       </p>
     </FormCard>
   )

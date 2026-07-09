@@ -40,7 +40,7 @@ export default function CreatePollPage() {
 
     const trimmedOptions = options.map((o) => o.trim()).filter(Boolean)
     if (trimmedOptions.length < 2) {
-      setError('יש להוסיף לפחות 2 אפשרויות תשובה')
+      setError('Please add at least 2 answer options')
       return
     }
 
@@ -52,32 +52,32 @@ export default function CreatePollPage() {
       })
       navigate(`/polls/${poll.id}/created`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה ביצירת הסקר')
+      setError(err instanceof Error ? err.message : 'Failed to create poll')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <FormCard title="יצירת סקר חדש">
+    <FormCard title="Create a new poll">
       <form onSubmit={handleSubmit}>
-        <label>שאלה</label>
+        <label>Question</label>
         <input
           type="text"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="מה השאלה שלך?"
+          placeholder="What do you want to ask?"
           required
         />
 
-        <label>אפשרויות תשובה</label>
+        <label>Answer options</label>
         {options.map((opt, i) => (
           <div key={i} className="option-row">
             <input
               type="text"
               value={opt}
               onChange={(e) => updateOption(i, e.target.value)}
-              placeholder={`אפשרות ${i + 1}`}
+              placeholder={`Option ${i + 1}`}
             />
             {options.length > 2 && (
               <button
@@ -92,13 +92,13 @@ export default function CreatePollPage() {
         ))}
 
         <button type="button" className="secondary" onClick={addOption}>
-          + הוסף אפשרות
+          + Add option
         </button>
 
         {error && <p className="error">{error}</p>}
 
         <button type="submit" disabled={loading}>
-          {loading ? 'יוצר...' : 'צור סקר'}
+          {loading ? 'Creating...' : 'Create poll'}
         </button>
       </form>
     </FormCard>
