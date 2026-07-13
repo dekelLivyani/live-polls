@@ -18,7 +18,7 @@ type AuthState = {
 }
 
 type AuthContextValue = AuthState & {
-  register: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string, firstName: string, lastName: string, verifyPassword: string) => Promise<void>
   login: (email: string, password: string) => Promise<void>
   logout: () => void
 }
@@ -62,10 +62,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('accessToken', state.accessToken)
   }, [state.accessToken])
 
-  const register = useCallback(async (email: string, password: string) => {
+  const register = useCallback(async (email: string, password: string, firstName: string, lastName: string, verifyPassword: string) => {
     const data = await api.post<AuthResponse>(
       '/auth/register',
-      { email, password },
+      { email, password, firstName, lastName, verifyPassword },
       { skipAuth: true },
     )
     localStorage.setItem('refreshToken', data.refreshToken)
