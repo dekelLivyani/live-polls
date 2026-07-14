@@ -5,31 +5,10 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { api } from '../api/client'
-
-type AuthUser = {
-  id: number
-  email: string
-}
-
-type AuthState = {
-  user: AuthUser | null
-  accessToken: string | null
-}
-
-type AuthContextValue = AuthState & {
-  register: (email: string, password: string, firstName: string, lastName: string, verifyPassword: string) => Promise<void>
-  login: (email: string, password: string) => Promise<void>
-  logout: () => void
-}
+import { api } from '@/api'
+import type { AuthUser, AuthState, AuthContextValue, AuthResponse } from '@/types'
 
 const AuthContext = createContext<AuthContextValue | null>(null)
-
-type AuthResponse = {
-  accessToken: string
-  refreshToken: string
-  user: AuthUser
-}
 
 function loadFromStorage(): AuthState {
   try {
@@ -62,16 +41,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('accessToken', state.accessToken)
   }, [state.accessToken])
 
-  const register = useCallback(async (email: string, password: string, firstName: string, lastName: string, verifyPassword: string) => {
-    const data = await api.post<AuthResponse>(
-      '/auth/register',
-      { email, password, firstName, lastName, verifyPassword },
-      { skipAuth: true },
-    )
-    localStorage.setItem('refreshToken', data.refreshToken)
-    saveToStorage(data.accessToken, data.user)
-    setState({ accessToken: data.accessToken, user: data.user })
-  }, [])
+  const register = useCallback(
+    async (
+      email: string,
+      password: string,
+      firstName: string,
+      lastName: string,
+      verifyPassword: string,
+    ) => {
+      const data = await api.post<AuthResponse>(
+        '/auth/register',
+        { email, password, firstName, lastName, verifyPassword },
+        { skipAuth: true },
+      )
+      localStorage.setItem('refreshToken', data.refreshToken)
+      saveToStorage(data.accessToken, data.user)
+      setState({ accessToken: data.accessToken, user: data.user })
+    },
+    [],
+  )
 
   const login = useCallback(async (email: string, password: string) => {
     const data = await api.post<AuthResponse>(

@@ -1,61 +1,19 @@
-import { FormEvent, useState } from 'react'
+import { useAuth } from '@/context'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { api } from '../api/client'
-import { FormCard } from '../components/FormCard'
-
-type CreatePollResponse = { id: number; question: string }
+import { useCreatePoll } from '@/hooks'
+import { FormCard } from '@/components/shared/FormCard'
+import { OptionsEditor } from '@/components/poll/OptionsEditor'
 
 export default function CreatePollPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
-
-  const [question, setQuestion] = useState('')
-  const [options, setOptions] = useState(['', ''])
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const { question, setQuestion, options, error, loading, updateOption, addOption, removeOption, handleSubmit } =
+    useCreatePoll()
 
   // redirect if not logged in
   if (!user) {
     navigate('/login')
     return null
-  }
-
-  function updateOption(index: number, value: string) {
-    setOptions((prev) => prev.map((o, i) => (i === index ? value : o)))
-  }
-
-  function addOption() {
-    setOptions((prev) => [...prev, ''])
-  }
-
-  function removeOption(index: number) {
-    if (options.length <= 2) return
-    setOptions((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    setError(null)
-
-    const trimmedOptions = options.map((o) => o.trim()).filter(Boolean)
-    if (trimmedOptions.length < 2) {
-      setError('Please add at least 2 answer options')
-      return
-    }
-
-    setLoading(true)
-    try {
-      const poll = await api.post<CreatePollResponse>('/polls', {
-        question: question.trim(),
-        options: trimmedOptions,
-      })
-      navigate(`/polls/${poll.id}/created`)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create poll')
-    } finally {
-      setLoading(false)
-    }
   }
 
   return (
@@ -70,30 +28,12 @@ export default function CreatePollPage() {
           required
         />
 
-        <label>Answer options</label>
-        {options.map((opt, i) => (
-          <div key={i} className="option-row">
-            <input
-              type="text"
-              value={opt}
-              onChange={(e) => updateOption(i, e.target.value)}
-              placeholder={`Option ${i + 1}`}
-            />
-            {options.length > 2 && (
-              <button
-                type="button"
-                className="remove-btn"
-                onClick={() => removeOption(i)}
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        ))}
-
-        <button type="button" className="secondary" onClick={addOption}>
-          + Add option
-        </button>
+        <OptionsEditor
+          options={options}
+          onUpdate={updateOption}
+          onAdd={addOption}
+          onRemove={removeOption}
+        />
 
         {error && <p className="error">{error}</p>}
 
