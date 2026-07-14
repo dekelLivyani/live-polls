@@ -4,7 +4,7 @@ import {RedisModule} from "./redis/redis.module";
 import {PrismaModule} from "./prisma/prisma.module";
 import {HealthModule} from "./health/health.module";
 import {AuthModule} from "./auth/auth.module";
-import {JwtModule} from "@nestjs/jwt";
+import {PollsModule} from "./polls/polls.module";
 
 @Module({
     imports: [
@@ -13,6 +13,7 @@ import {JwtModule} from "@nestjs/jwt";
         RedisModule,
         HealthModule,
         AuthModule,
+        PollsModule
     ],
 })
 export class AppModule {
