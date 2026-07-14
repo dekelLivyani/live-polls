@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { api } from '../api/client'
 import { getVoterId } from '../utils/voterId'
+import { useAuth } from '../context/AuthContext'
 
 type PollOption = {
   id: number
@@ -33,7 +34,11 @@ type PageState =
 
 export default function VotePage() {
   const { id } = useParams<{ id: string }>()
+  const { user } = useAuth()
   const [state, setState] = useState<PageState>({ phase: 'loading' })
+
+  // use userId if logged in, otherwise fall back to anonymous UUID
+  const voterId = user ? String(user.id) : getVoterId()
 
   useEffect(() => {
     api
@@ -53,7 +58,6 @@ export default function VotePage() {
   }
 
   async function handleVote(optionId: number) {
-    const voterId = getVoterId()
     try {
       await api.post(`/polls/${id}/vote`, { optionId, voterId }, { skipAuth: true })
       const results = await fetchResults()
