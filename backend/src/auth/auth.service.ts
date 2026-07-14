@@ -12,7 +12,7 @@ export class AuthService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly jwtService: JwtService,
-        private readonly redisService: RedisService
+        private readonly redis: RedisService
     ) {
     }
     async register(payload: RegisterDto){
@@ -34,7 +34,7 @@ export class AuthService {
 
     async login(payload: LoginDto){
         const { email, password } = payload;
-        const rateLimitCount: string | null = await this.redisService.get(`login-attempts:${email}`)
+        const rateLimitCount: string | null = await this.redis.get(`login-attempts:${email}`)
         if(rateLimitCount && parseInt(rateLimitCount) >= 5){
             throw new HttpException('Too many login attempts, try again later', HttpStatus.TOO_MANY_REQUESTS)
         }
@@ -49,13 +49,13 @@ export class AuthService {
         const passwordFromDB = user.passwordHash;
         const isValid = await compare(password, passwordFromDB)
         if(!isValid){
-            await this.redisService.incr(`login-attempts:${email}`)
+            await this.redis.incr(`login-attempts:${email}`)
             if(!rateLimitCount) {
-                await this.redisService.expire(`login-attempts:${email}`, 900)
+                await this.redis.expire(`login-attempts:${email}`, 900)
             }
             throw new Error('Invalid credentials')
         }
-        await this.redisService.del(`login-attempts:${email}`)
+        await this.redis.del(`login-attempts:${email}`)
         const userPayload: JwtUser  = { sub: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName };
         const { accessToken, refreshToken } = this.generateTokens(userPayload);
         const { passwordHash, ...safeUser } = user
