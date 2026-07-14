@@ -1,4 +1,4 @@
-import {ConflictException, Controller, Post, Body, UnauthorizedException, Res} from "@nestjs/common";
+import {ConflictException, Controller, Post, Body, UnauthorizedException, Res, HttpException} from "@nestjs/common";
 import {AuthService} from "./auth.service";
 import {RegisterDto} from "./dto/register.dto";
 import {LoginDto} from "./dto/login.dto";
@@ -25,6 +25,9 @@ export class AuthController {
                 user
             })
         } catch (error) {
+            if (error instanceof HttpException) {
+                throw error
+            }
             throw new UnauthorizedException('Invalid credentials')
         }
     }
